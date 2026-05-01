@@ -210,8 +210,44 @@ void listarEventosPorIntervaloDeID() {
 }
 
 // Função para alterar o status de um evento
-void alterarStatusEvento() {
+struct EventoCritico *alterarStatusEvento(struct EventoCritico *raiz, int id) {
+    int opcao;
 
+    if (raiz == NULL) {
+        printf("+------------------------------------------------------+\n");
+        printf("|       Evento critico com ID %d nao encontrado       |\n", id);
+        printf("+------------------------------------------------------+\n");
+        return NULL;
+    }
+
+    if (id < raiz->id) {
+        buscarEventoCriticoPorID(raiz->esquerda, id);
+    } else if (id > raiz->id) {
+        buscarEventoCriticoPorID(raiz->direita, id);
+    } else {
+        do {
+            printf("|-> Status atual do evento: %s\n", (raiz->situacao == ATIVO) ? "ATIVO" : "RESOLVIDO");
+
+            printf("Qual o novo status do evento? (1. ATIVO, 2. RESOLVIDO): ");
+            scanf("%d", &opcao);
+        } while (opcao < 1 || opcao > 2);
+
+        if (opcao == 1 && raiz->situacao == ATIVO) {
+            printf("+------------------------------------------------------+\n");
+            printf("|       O evento ja esta com status ATIVO!             |\n");
+            printf("+------------------------------------------------------+\n");
+        } else if (opcao == 2 && raiz->situacao == RESOLVIDO) {
+            printf("+------------------------------------------------------+\n");
+            printf("|       O evento ja esta com status RESOLVIDO!         |\n");
+            printf("+------------------------------------------------------+\n");
+        } else {
+            raiz->situacao = (opcao == 1) ? ATIVO : RESOLVIDO;
+            printf("+------------------------------------------------------+\n");
+            printf("|       Status do evento atualizado com sucesso!       |\n");
+            printf("+------------------------------------------------------+\n");
+        }
+    }
+    return raiz;
 }
 
 // Função para atualizar a seriedade de um evento ativo
@@ -297,7 +333,7 @@ void exibirMenu() {
                     break;
                 }
 
-                raiz = cadastrarEventoCritico(raiz, geraId(), tipo, seriedade, obtemDataHoraAtual(dataHora), regiao, situacao = RESOLVIDO);
+                raiz = cadastrarEventoCritico(raiz, geraId(), tipo, seriedade, obtemDataHoraAtual(dataHora), regiao, situacao = ATIVO);
                 printf("+------------------------------------------------------+\n");
                 printf("|        Evento critico cadastrado com sucesso!        |\n");
                 printf("+------------------------------------------------------+\n");
@@ -390,7 +426,10 @@ void exibirMenu() {
                 listarEventosPorIntervaloDeID();
                 break;
             case 6:
-                alterarStatusEvento();
+                printf("|-> Informe o ID do evento para alterar o status: ");
+                scanf("%d", &idBusca);
+
+                alterarStatusEvento(raiz, idBusca);
                 break;
             case 7:
                 atualizarSeriedadeEventoAtivo();
