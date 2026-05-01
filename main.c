@@ -31,32 +31,52 @@ int calcularMaiorValor(int x, int y) {
 
 // Função para criar novo nó
 struct EventoCritico *criarNO(int id) {
-    
+    struct EventoCritico *no = (struct EventoCritico *)malloc(sizeof(struct EventoCritico));
+    no->id = id;
+    no->altura = 0;
+    no->esquerda = NULL;
+    no->direita = NULL;
+    return no;
 }
 
 // Função para realizar rotação simples à esquerda
 struct EventoCritico *rotacaoRR(struct EventoCritico *raiz) {
-    
+    struct EventoCritico *no = raiz->direita;
+    raiz->direita = no->esquerda;
+    no->esquerda = raiz;
+    raiz->altura = calcularMaiorValor(calcularAlturaNO(raiz->esquerda), calcularAlturaNO(raiz->direita)) + 1;
+    no->altura = calcularMaiorValor(calcularAlturaNO(no->esquerda), calcularAlturaNO(no->direita)) + 1;
+    return no;
 }
 
 // Função para realizar rotação simples à direita
 struct EventoCritico *rotacaoLL(struct EventoCritico *raiz) {
-    
+    struct EventoCritico *no = raiz->esquerda;
+    raiz->esquerda = no->direita;
+    no->direita = raiz;
+    raiz->altura = calcularMaiorValor(calcularAlturaNO(raiz->esquerda), calcularAlturaNO(raiz->direita)) + 1;
+    no->altura = calcularMaiorValor(calcularAlturaNO(no->esquerda), calcularAlturaNO(no->direita)) + 1;
+    return no;
 }
 
 // Função para realizar rotação dupla à esquerda-direita
 struct EventoCritico *rotacaoLR(struct EventoCritico *raiz) {
-
+    raiz->esquerda = rotacaoRR(raiz->esquerda);
+    return rotacaoLL(raiz);
 }
 
 // Função para realizar rotação dupla à direita-esquerda
 struct EventoCritico *rotacaoRL(struct EventoCritico *raiz) {
-    
+    raiz->direita = rotacaoLL(raiz->direita);
+    return rotacaoRR(raiz);
 }
 
 // Função para calcular o fator de balanceamento
 int fatorBalanceamento(struct EventoCritico *no) {
-
+    if (no == NULL) {
+        return 0;
+    }
+    return calcularAlturaNO(no->esquerda) - calcularAlturaNO(no->direita);
 }
 
 // Função para cadastrar um novo evento crítico
