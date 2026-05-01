@@ -251,8 +251,40 @@ struct EventoCritico *alterarStatusEvento(struct EventoCritico *raiz, int id) {
 }
 
 // Função para atualizar a seriedade de um evento ativo
-void atualizarSeriedadeEventoAtivo() {
+struct EventoCritico *atualizarSeriedadeEventoAtivo(struct EventoCritico *raiz, int id) {
+    int opcao;
 
+    if (raiz == NULL) {
+        printf("+------------------------------------------------------+\n");
+        printf("|       Evento critico com ID %d nao encontrado       |\n", id);
+        printf("+------------------------------------------------------+\n");
+        return NULL;
+    }
+
+    if (id < raiz->id) {
+        buscarEventoCriticoPorID(raiz->esquerda, id);
+    } else if (id > raiz->id) {
+        buscarEventoCriticoPorID(raiz->direita, id);
+    } else {
+        do {
+            printf("|-> Seriedade atual do evento: %d\n", (raiz->seriedade));
+
+            printf("Qual o novo seriedade do evento? (1 a 5): ");
+            scanf("%d", &opcao);
+        } while (opcao < 1 || opcao > 5);
+
+        if (opcao == raiz->seriedade) {
+            printf("+------------------------------------------------------+\n");
+            printf("|       O evento ja esta com seriedade %d!             |\n", raiz->seriedade);
+            printf("+------------------------------------------------------+\n");
+        } else {
+            raiz->seriedade = opcao;
+            printf("+------------------------------------------------------+\n");
+            printf("|       Seriedade do evento atualizada com sucesso!    |\n");
+            printf("+------------------------------------------------------+\n");
+        }
+    }
+    return raiz;
 }
 
 // Função para gerar um ID único para cada evento crítico
@@ -432,7 +464,9 @@ void exibirMenu() {
                 alterarStatusEvento(raiz, idBusca);
                 break;
             case 7:
-                atualizarSeriedadeEventoAtivo();
+                printf("|-> Informe o ID do evento para alterar a seriedade: ");
+                scanf("%d", &idBusca);
+                atualizarSeriedadeEventoAtivo(raiz, idBusca);
                 break;
             case 0:
                 printf("Saindo do sistema...\n");
