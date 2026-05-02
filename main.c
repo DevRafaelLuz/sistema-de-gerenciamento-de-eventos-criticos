@@ -199,8 +199,42 @@ struct EventoCritico *buscarEventoCriticoPorID(struct EventoCritico *raiz, int i
 }
 
 // Função para listar eventos ativos por intervalo de seriedade
-void listarEventosAtivosPorSeriedade() {
+void listarEventosAtivosPorSeriedade(struct EventoCritico *raiz, int seriedadeMin, int seriedadeMax)  {
+    if (raiz == NULL) {
+        return;
+    }
+    listarEventosAtivosPorSeriedade(raiz->esquerda, seriedadeMin, seriedadeMax);
+    
+    if (raiz->situacao == ATIVO && raiz->seriedade >= seriedadeMin && raiz->seriedade <= seriedadeMax) {
+        printf("+------------------------------------------------------+\n");
+        printf("|-> ID do evento: %d\n", raiz->id);
 
+        switch (raiz->tipo) {
+            case ACIDENTE_TRANSITO:
+                printf("|-> Tipo do evento: ACIDENTE_TRANSITO\n");
+                break;
+            case FALHA_SEMAFORO:
+                printf("|-> Tipo do evento: FALHA_SEMAFORO\n");
+                break;
+            case INTERRUPCAO_ENERGIA:
+                printf("|-> Tipo do evento: INTERRUPCAO_ENERGIA\n");
+                break;
+            case ALAGAMENTO:
+                printf("|-> Tipo do evento: ALAGAMENTO\n");
+                break;
+            case INCENDIO:
+                printf("|-> Tipo do evento: INCENDIO\n");
+                break;
+            default:
+                printf("|-> Tipo do evento: DESCONHECIDO\n");
+                break;
+        }
+        printf("|-> Seriedade do evento: %d\n", raiz->seriedade);
+        printf("|-> Data e hora do evento: %02d/%02d/%04d %02d:%02d:%02d\n", raiz->dataHora.tm_mday, raiz->dataHora.tm_mon + 1, raiz->dataHora.tm_year + 1900, raiz->dataHora.tm_hour, raiz->dataHora.tm_min, raiz->dataHora.tm_sec);
+        printf("|-> Regiao do evento: %s\n", raiz->regiao);
+        printf("|-> Situacao: %s\n", raiz->situacao == ATIVO ? "ATIVO" : "RESOLVIDO");  
+    }
+    listarEventosAtivosPorSeriedade(raiz->direita, seriedadeMin, seriedadeMax);
 }
 
 // Função para listar eventos por intervalo de ID
@@ -341,6 +375,7 @@ void exibirMenu() {
     int opcao, tipoEvento, idRemocao, idBusca, seriedade;
     int idMin, idMax;
     int idNovoEvento;
+    int seriedadeMin, seriedadeMax;
     char regiao[50];
     enum tipoEvento tipo;
     struct tm dataHora;
@@ -491,7 +526,12 @@ void exibirMenu() {
                 }
                 break;
             case 4:
-                listarEventosAtivosPorSeriedade();
+                printf("|-> Informe a seriedade minima: ");
+                scanf("%d", &seriedadeMin);
+                printf("|-> Informe a seriedade maxima: ");
+                scanf("%d", &seriedadeMax);
+                listarEventosAtivosPorSeriedade(raiz, seriedadeMin, seriedadeMax);
+                printf("+------------------------------------------------------+\n");
                 break;
             case 5:
                 printf("|-> Informe o ID minimo: ");
@@ -504,7 +544,6 @@ void exibirMenu() {
             case 6:
                 printf("|-> Informe o ID do evento para alterar o status: ");
                 scanf("%d", &idBusca);
-
                 raiz = alterarStatusEvento(raiz, idBusca);
                 break;
             case 7:
