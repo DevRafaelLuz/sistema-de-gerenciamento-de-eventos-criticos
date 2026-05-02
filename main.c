@@ -353,6 +353,46 @@ struct EventoCritico *atualizarSeriedadeEventoAtivo(struct EventoCritico *raiz, 
     return raiz;
 }
 
+// Função para exibir relatório de eventos críticos ativos por região, ordenador por ID (via percuso in-order) 
+void exibirRelatorioPorRegiao(struct EventoCritico *raiz, char *regiao) {
+    if (raiz == NULL) {
+        return;
+    }
+
+    exibirRelatorioPorRegiao(raiz->esquerda, regiao);
+
+    if (raiz->situacao == ATIVO && strcmp(raiz->regiao, regiao) == 0) {
+        printf("+------------------------------------------------------+\n");
+        printf("|-> ID do evento: %d\n", raiz->id);
+
+        switch (raiz->tipo) {
+            case ACIDENTE_TRANSITO:
+                printf("|-> Tipo do evento: ACIDENTE_TRANSITO\n");
+                break;
+            case FALHA_SEMAFORO:
+                printf("|-> Tipo do evento: FALHA_SEMAFORO\n");
+                break;
+            case INTERRUPCAO_ENERGIA:
+                printf("|-> Tipo do evento: INTERRUPCAO_ENERGIA\n");
+                break;
+            case ALAGAMENTO:
+                printf("|-> Tipo do evento: ALAGAMENTO\n");
+                break;
+            case INCENDIO:
+                printf("|-> Tipo do evento: INCENDIO\n");
+                break;
+            default:
+                printf("|-> Tipo do evento: DESCONHECIDO\n");
+                break;
+        }
+        printf("|-> Seriedade do evento: %d\n", raiz->seriedade);
+        printf("|-> Data e hora do evento: %02d/%02d/%04d %02d:%02d:%02d\n", raiz->dataHora.tm_mday, raiz->dataHora.tm_mon + 1, raiz->dataHora.tm_year + 1900, raiz->dataHora.tm_hour, raiz->dataHora.tm_min, raiz->dataHora.tm_sec);
+        printf("|-> Regiao do evento: %s\n", raiz->regiao);
+        printf("|-> Situacao: %s\n", raiz->situacao == ATIVO ? "ATIVO" : "RESOLVIDO");
+    }
+    exibirRelatorioPorRegiao(raiz->direita, regiao);
+}
+
 // Função para gerar um ID único para cada evento crítico
 int geraId() {    
     return rand() % 900 + 100;
@@ -383,6 +423,7 @@ void exibirMenu() {
         printf("| 1. Registro de Eventos Criticos                      |\n");
         printf("| 2. Busca/Listagem de Eventos Criticos                |\n");
         printf("| 3. Atualizacao de Eventos Criticos                   |\n");
+        printf("| 4. Relatorio de Eventos Criticos por Regiao          |\n");
         printf("| 0. Sair                                              |\n");
         printf("+------------------------------------------------------+\n");
         printf("|-> Escolha uma opcao: ");
@@ -651,6 +692,12 @@ void exibirMenu() {
                         break;
                 }
                 opcao = -1;
+                break;
+            case 4:
+                printf("|-> Informe a regiao para exibir o relatorio: ");
+                scanf(" %49[^\n]", regiao);
+                exibirRelatorioPorRegiao(raiz, regiao);
+                printf("+------------------------------------------------------+\n");
                 break;
             case 0:
                 break;
