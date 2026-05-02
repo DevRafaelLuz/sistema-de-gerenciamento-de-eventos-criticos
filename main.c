@@ -6,6 +6,8 @@
 enum tipoEvento { ACIDENTE_TRANSITO, FALHA_SEMAFORO, INTERRUPCAO_ENERGIA, ALAGAMENTO, INCENDIO };
 enum status { ATIVO, RESOLVIDO };
 
+int totalRotacoes = 0;
+
 // Definição do nó da árvore AVL para eventos críticos
 typedef struct EventoCritico {
     int id;
@@ -53,6 +55,7 @@ struct EventoCritico *rotacaoRR(struct EventoCritico *raiz) {
     no->esquerda = raiz;
     raiz->altura = calcularMaiorValor(calcularAlturaNO(raiz->esquerda), calcularAlturaNO(raiz->direita)) + 1;
     no->altura = calcularMaiorValor(calcularAlturaNO(no->esquerda), calcularAlturaNO(no->direita)) + 1;
+    totalRotacoes++;
     return no;
 }
 
@@ -63,18 +66,21 @@ struct EventoCritico *rotacaoLL(struct EventoCritico *raiz) {
     no->direita = raiz;
     raiz->altura = calcularMaiorValor(calcularAlturaNO(raiz->esquerda), calcularAlturaNO(raiz->direita)) + 1;
     no->altura = calcularMaiorValor(calcularAlturaNO(no->esquerda), calcularAlturaNO(no->direita)) + 1;
+    totalRotacoes++;
     return no;
 }
 
 // Função para realizar rotação dupla à esquerda-direita
 struct EventoCritico *rotacaoLR(struct EventoCritico *raiz) {
     raiz->esquerda = rotacaoRR(raiz->esquerda);
+    totalRotacoes++;
     return rotacaoLL(raiz);
 }
 
 // Função para realizar rotação dupla à direita-esquerda
 struct EventoCritico *rotacaoRL(struct EventoCritico *raiz) {
     raiz->direita = rotacaoLL(raiz->direita);
+    totalRotacoes++;
     return rotacaoRR(raiz);
 }
 
@@ -393,6 +399,53 @@ void exibirRelatorioPorRegiao(struct EventoCritico *raiz, char *regiao) {
     exibirRelatorioPorRegiao(raiz->direita, regiao);
 }
 
+// Função para contar o número total de nós na árvore
+int contarNOs(struct EventoCritico *raiz) {
+    if (raiz == NULL) return 0;
+
+    return 1 + contarNOs(raiz->esquerda) + contarNOs(raiz->direita);
+}
+
+// Função para contar o número de eventos ativos na árvore
+int contarEventosAtivos(struct EventoCritico *raiz) {
+    if (raiz == NULL) return 0;
+
+    int atual = (raiz->situacao == ATIVO) ? 1 : 0;
+
+    return atual + contarEventosAtivos(raiz->esquerda) + contarEventosAtivos(raiz->direita);
+}
+
+// Função para calcular o fator de balanceamento médio da árvore
+int somaFatorBalanceamento(struct EventoCritico *raiz) {
+    if (raiz == NULL) return 0;
+
+    return fatorBalanceamento(raiz) + somaFatorBalanceamento(raiz->esquerda) + somaFatorBalanceamento(raiz->direita);
+}
+
+// Função para calcular o fator de balanceamento médio da árvore
+float fatorBalanceamentoMedio(struct EventoCritico *raiz) {
+    int totalNos = contarNOs(raiz);
+
+    if (totalNos == 0) return 0;
+
+    int soma = somaFatorBalanceamento(raiz);
+
+    return (float)soma / totalNos;
+}
+
+// Função para calcular métricas da árvore AVL
+void exibirMetricas(struct EventoCritico *raiz) {
+    printf("+------------------------------------------------------+\n");
+    printf("|                       METRICAS                       |\n");
+    printf("+------------------------------------------------------+\n");
+    printf("|-> Altura da arvore: %d\n", calcularAlturaNO(raiz));
+    printf("|-> Total de nos: %d\n", contarNOs(raiz));
+    printf("|-> Eventos ativos: %d\n", contarEventosAtivos(raiz));
+    printf("|-> Fator de balanceamento medio: %.2f\n", fatorBalanceamentoMedio(raiz));
+    printf("|-> Total de rotacoes: %d\n", totalRotacoes);
+    printf("+------------------------------------------------------+\n");
+}
+
 // Função para gerar um ID único para cada evento crítico
 int geraId() {    
     return rand() % 900 + 100;
@@ -424,6 +477,7 @@ void exibirMenu() {
         printf("| 2. Busca/Listagem de Eventos Criticos                |\n");
         printf("| 3. Atualizacao de Eventos Criticos                   |\n");
         printf("| 4. Relatorio de Eventos Criticos por Regiao          |\n");
+        printf("| 5. Exibir metricas da arvore AVL                     |\n");
         printf("| 0. Sair                                              |\n");
         printf("+------------------------------------------------------+\n");
         printf("|-> Escolha uma opcao: ");
@@ -698,6 +752,9 @@ void exibirMenu() {
                 scanf(" %49[^\n]", regiao);
                 exibirRelatorioPorRegiao(raiz, regiao);
                 printf("+------------------------------------------------------+\n");
+                break;
+            case 5:
+                exibirMetricas(raiz);
                 break;
             case 0:
                 break;
