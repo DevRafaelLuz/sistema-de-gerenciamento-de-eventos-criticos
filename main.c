@@ -281,39 +281,25 @@ void listarEventosPorIntervaloDeID(struct EventoCritico *raiz, int idMin, int id
 
 // Função para alterar o status de um evento
 struct EventoCritico *alterarStatusEvento(struct EventoCritico *raiz, int id) {
-    int opcao;
-
     if (raiz == NULL) {
-        printf("+------------------------------------------------------+\n");
-        printf("|       Evento critico com ID %d nao encontrado       |\n", id);
-        printf("+------------------------------------------------------+\n");
         return NULL;
     }
 
-    if (id < raiz->id) {
-        buscarEventoCriticoPorID(raiz->esquerda, id);
-    } else if (id > raiz->id) {
-        buscarEventoCriticoPorID(raiz->direita, id);
+    struct EventoCritico *evento = buscarEventoCriticoPorID(raiz, id);
+
+    if (id < evento->id) {
+        buscarEventoCriticoPorID(evento->esquerda, id);
+    } else if (id > evento->id) {
+        buscarEventoCriticoPorID(evento->direita, id);
     } else {
-        do {
-            printf("|-> Status atual do evento: %s\n", (raiz->situacao == ATIVO) ? "ATIVO" : "RESOLVIDO");
-
-            printf("Qual o novo status do evento? (1. ATIVO, 2. RESOLVIDO): ");
-            scanf("%d", &opcao);
-        } while (opcao < 1 || opcao > 2);
-
-        if (opcao == 1 && raiz->situacao == ATIVO) {
-            printf("+------------------------------------------------------+\n");
-            printf("|       O evento ja esta com status ATIVO!             |\n");
-            printf("+------------------------------------------------------+\n");
-        } else if (opcao == 2 && raiz->situacao == RESOLVIDO) {
-            printf("+------------------------------------------------------+\n");
-            printf("|       O evento ja esta com status RESOLVIDO!         |\n");
-            printf("+------------------------------------------------------+\n");
-        } else {
-            raiz->situacao = (opcao == 1) ? ATIVO : RESOLVIDO;
+        if (evento->situacao == ATIVO) {
+            evento->situacao = RESOLVIDO;
             printf("+------------------------------------------------------+\n");
             printf("|       Status do evento atualizado com sucesso!       |\n");
+            printf("+------------------------------------------------------+\n");
+        } else {
+            printf("+------------------------------------------------------+\n");
+            printf("|       O evento ja esta com status RESOLVIDO!         |\n");
             printf("+------------------------------------------------------+\n");
         }
     }
