@@ -324,35 +324,39 @@ struct EventoCritico *alterarStatusEvento(struct EventoCritico *raiz, int id) {
 struct EventoCritico *atualizarSeriedadeEventoAtivo(struct EventoCritico *raiz, int id) {
     int opcao;
 
-    if (raiz == NULL) {
+    struct EventoCritico *evento = buscarEventoCriticoPorID(raiz, id);
+
+    if (evento == NULL) {
         printf("+------------------------------------------------------+\n");
         printf("|       Evento critico com ID %d nao encontrado       |\n", id);
         printf("+------------------------------------------------------+\n");
-        return NULL;
+        return raiz;
     }
 
-    if (id < raiz->id) {
-        buscarEventoCriticoPorID(raiz->esquerda, id);
-    } else if (id > raiz->id) {
-        buscarEventoCriticoPorID(raiz->direita, id);
+    if (evento->situacao != ATIVO) {
+        printf("+------------------------------------------------------+\n");
+        printf("|         Nao e possivel alterar a seriedade!          |\n");
+        printf("|         Motivo: evento nao esta ATIVO.               |\n");
+        printf("+------------------------------------------------------+\n");
+        return raiz;
+    }
+
+    do {
+        printf("|-> Seriedade atual do evento: %d\n", (evento->seriedade));
+
+        printf("Qual o novo seriedade do evento? (1 a 5): ");
+        scanf("%d", &opcao);
+    } while (opcao < 1 || opcao > 5);
+
+    if (opcao == evento->seriedade) {
+        printf("+------------------------------------------------------+\n");
+        printf("|       O evento ja esta com seriedade %d!             |\n", evento->seriedade);
+        printf("+------------------------------------------------------+\n");
     } else {
-        do {
-            printf("|-> Seriedade atual do evento: %d\n", (raiz->seriedade));
-
-            printf("Qual o novo seriedade do evento? (1 a 5): ");
-            scanf("%d", &opcao);
-        } while (opcao < 1 || opcao > 5);
-
-        if (opcao == raiz->seriedade) {
-            printf("+------------------------------------------------------+\n");
-            printf("|       O evento ja esta com seriedade %d!             |\n", raiz->seriedade);
-            printf("+------------------------------------------------------+\n");
-        } else {
-            raiz->seriedade = opcao;
-            printf("+------------------------------------------------------+\n");
-            printf("|       Seriedade do evento atualizada com sucesso!    |\n");
-            printf("+------------------------------------------------------+\n");
-        }
+        evento->seriedade = opcao;
+        printf("+------------------------------------------------------+\n");
+        printf("|       Seriedade do evento atualizada com sucesso!    |\n");
+        printf("+------------------------------------------------------+\n");
     }
     return raiz;
 }
