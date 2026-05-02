@@ -380,13 +380,9 @@ void exibirMenu() {
         printf("\n+------------------------------------------------------+\n");
         printf("|     Sistema de Gerenciamento de Eventos Criticos     |\n");
         printf("+------------------------------------------------------+\n");
-        printf("| 1. Cadastrar Novo Evento Critico                     |\n");
-        printf("| 2. Remover Evento Critico                            |\n");
-        printf("| 3. Buscar Evento Critico                             |\n");
-        printf("| 4. Listar Eventos Ativos por Intervalo de Seriedade  |\n");
-        printf("| 5. Listar Eventos por Intervalo de ID                |\n");
-        printf("| 6. Alterar Status de um Evento                       |\n");
-        printf("| 7. Atualizar Seriedade de um Evento Ativo            |\n");
+        printf("| 1. Registro de Eventos Criticos                      |\n");
+        printf("| 2. Busca/Listagem de Eventos Criticos                |\n");
+        printf("| 3. Atualizacao de Eventos Criticos                   |\n");
         printf("| 0. Sair                                              |\n");
         printf("+------------------------------------------------------+\n");
         printf("|-> Escolha uma opcao: ");
@@ -394,179 +390,246 @@ void exibirMenu() {
         
         switch (opcao) {
             case 1:
-                idNovoEvento = geraId();
                 do {
-                    printf("|-> Informe o tipo do evento: \n(1. ACIDENTE_TRANSITO, 2. FALHA_SEMAFORO, 3. INTERRUPCAO_ENERGIA, 4. ALAGAMENTO, 5. INCENDIO): ");
-                    scanf("%d", &tipoEvento);                    
-
-                    switch (tipoEvento) {
-                        case 1:
-                            tipo = ACIDENTE_TRANSITO;
-                            break;
-                        case 2:
-                            tipo = FALHA_SEMAFORO;
-                            break;
-                        case 3:
-                            tipo = INTERRUPCAO_ENERGIA;
-                            break;
-                        case 4:
-                            tipo = ALAGAMENTO;
-                            break;
-                        case 5:
-                            tipo = INCENDIO;
-                            break;
-                        default:
-                            printf("Tipo de evento invalido!\n");
-                    }
-                } while (tipoEvento < 1 || tipoEvento > 5);
-
-                do {
-                    printf("|-> Informe a seriedade do evento (1-5): ");
-                    scanf("%d", &seriedade);
-                } while (seriedade < 1 || seriedade > 5); 
-
-                printf("|-> Informe a regiao do evento: ");
-                scanf(" %49[^\n]", regiao);
-
-                if (strlen(regiao) == 0) {
-                    printf("Regiao invalida!\n");
-                    break;
-                }
-
-                raiz = cadastrarEventoCritico(raiz, idNovoEvento, tipo, seriedade, obtemDataHoraAtual(dataHora), regiao, ATIVO);
-
-                struct EventoCritico *novoEvento = buscarEventoCriticoPorID(raiz, idNovoEvento);
-
-                if (novoEvento != NULL) {
+                    printf("\n+------------------------------------------------------+\n");
+                    printf("|             Registro de Eventos Criticos             |\n");
                     printf("+------------------------------------------------------+\n");
-                    printf("|        Evento critico cadastrado com sucesso!        |\n");
+                    printf("| 1. Cadastrar Novo Evento Critico                     |\n");
+                    printf("| 2. Remover Evento Critico                            |\n");
+                    printf("| 0. Voltar ao Menu Principal                          |\n");
                     printf("+------------------------------------------------------+\n");
-                    printf("|-> ID do evento: %d\n", buscarEventoCriticoPorID(raiz, idNovoEvento)->id);
-                    
-                    switch (novoEvento->tipo) {
-                        case ACIDENTE_TRANSITO:
-                            printf("|-> Tipo do evento: ACIDENTE_TRANSITO\n");
-                           break;
-                        case FALHA_SEMAFORO:
-                            printf("|-> Tipo do evento: FALHA_SEMAFORO\n");
+                    printf("|-> Escolha uma opcao: ");
+                    scanf("%d", &opcao);
+                } while (opcao < 0 || opcao > 2);
+
+                switch (opcao) {
+                    case 1:
+                        idNovoEvento = geraId();
+                        do {
+                            printf("|-> Informe o tipo do evento: \n(1. ACIDENTE_TRANSITO, 2. FALHA_SEMAFORO, 3. INTERRUPCAO_ENERGIA, 4. ALAGAMENTO, 5. INCENDIO): ");
+                            scanf("%d", &tipoEvento);                    
+
+                            switch (tipoEvento) {
+                                case 1:
+                                    tipo = ACIDENTE_TRANSITO;
+                                    break;
+                                case 2:
+                                    tipo = FALHA_SEMAFORO;
+                                    break;
+                                case 3:
+                                    tipo = INTERRUPCAO_ENERGIA;
+                                    break;
+                                case 4:
+                                    tipo = ALAGAMENTO;
+                                    break;
+                                case 5:
+                                    tipo = INCENDIO;
+                                    break;
+                                default:
+                                    printf("Tipo de evento invalido!\n");
+                            }
+                        } while (tipoEvento < 1 || tipoEvento > 5);
+
+                        do {
+                            printf("|-> Informe a seriedade do evento (1-5): ");
+                            scanf("%d", &seriedade);
+                        } while (seriedade < 1 || seriedade > 5); 
+
+                        printf("|-> Informe a regiao do evento: ");
+                        scanf(" %49[^\n]", regiao);
+
+                        if (strlen(regiao) == 0) {
+                            printf("Regiao invalida!\n");
                             break;
-                        case INTERRUPCAO_ENERGIA:
-                            printf("|-> Tipo do evento: INTERRUPCAO_ENERGIA\n");
-                            break;
-                        case ALAGAMENTO:
-                            printf("|-> Tipo do evento: ALAGAMENTO\n");
-                            break;
-                        case INCENDIO:
-                            printf("|-> Tipo do evento: INCENDIO\n");
-                            break;
-                        default:
-                            printf("|-> Tipo do evento: DESCONHECIDO\n");
-                        }                        
-                    printf("|-> Seriedade do evento: %d\n", novoEvento->seriedade);
-                    printf("|-> Data e hora do evento: %02d/%02d/%04d %02d:%02d:%02d\n", novoEvento->dataHora.tm_mday, novoEvento->dataHora.tm_mon + 1, novoEvento->dataHora.tm_year + 1900, novoEvento->dataHora.tm_hour, novoEvento->dataHora.tm_min, novoEvento->dataHora.tm_sec);
-                    printf("|-> Regiao do evento: %s\n", novoEvento->regiao);
-                    printf("|-> Situacao do evento: ATIVO\n");
+                        }
+
+                        raiz = cadastrarEventoCritico(raiz, idNovoEvento, tipo, seriedade, obtemDataHoraAtual(dataHora), regiao, ATIVO);
+
+                        struct EventoCritico *novoEvento = buscarEventoCriticoPorID(raiz, idNovoEvento);
+
+                        if (novoEvento != NULL) {
+                            printf("+------------------------------------------------------+\n");
+                            printf("|        Evento critico cadastrado com sucesso!        |\n");
+                            printf("+------------------------------------------------------+\n");
+                            printf("|-> ID do evento: %d\n", buscarEventoCriticoPorID(raiz, idNovoEvento)->id);
+                            
+                            switch (novoEvento->tipo) {
+                                case ACIDENTE_TRANSITO:
+                                    printf("|-> Tipo do evento: ACIDENTE_TRANSITO\n");
+                                break;
+                                case FALHA_SEMAFORO:
+                                    printf("|-> Tipo do evento: FALHA_SEMAFORO\n");
+                                    break;
+                                case INTERRUPCAO_ENERGIA:
+                                    printf("|-> Tipo do evento: INTERRUPCAO_ENERGIA\n");
+                                    break;
+                                case ALAGAMENTO:
+                                    printf("|-> Tipo do evento: ALAGAMENTO\n");
+                                    break;
+                                case INCENDIO:
+                                    printf("|-> Tipo do evento: INCENDIO\n");
+                                    break;
+                                default:
+                                    printf("|-> Tipo do evento: DESCONHECIDO\n");
+                                }                        
+                            printf("|-> Seriedade do evento: %d\n", novoEvento->seriedade);
+                            printf("|-> Data e hora do evento: %02d/%02d/%04d %02d:%02d:%02d\n", novoEvento->dataHora.tm_mday, novoEvento->dataHora.tm_mon + 1, novoEvento->dataHora.tm_year + 1900, novoEvento->dataHora.tm_hour, novoEvento->dataHora.tm_min, novoEvento->dataHora.tm_sec);
+                            printf("|-> Regiao do evento: %s\n", novoEvento->regiao);
+                            printf("|-> Situacao do evento: ATIVO\n");
+                        }
+                        break;
+                    case 2:
+                        printf("|-> Informe o ID do evento a ser removido: ");
+                        scanf("%d", &idRemocao);
+                        
+                        struct EventoCritico *eventoRemocao = buscarEventoCriticoPorID(raiz, idRemocao);
+
+                        if (eventoRemocao == NULL) {
+                            printf("+------------------------------------------------------+\n");
+                            printf("|            Evento critico nao encontrado!            |\n");
+                            printf("+------------------------------------------------------+\n");
+                        } 
+                        else if (eventoRemocao->situacao != RESOLVIDO) {
+                            printf("+------------------------------------------------------+\n");
+                            printf("|  Nao e possivel remover: evento nao esta RESOLVIDO   |\n");
+                            printf("+------------------------------------------------------+\n");
+                        } 
+                        else {
+                            raiz = removerEventoCritico(raiz, idRemocao);
+                            printf("+------------------------------------------------------+\n");
+                            printf("|             Evento removido com sucesso!             |\n");
+                            printf("+------------------------------------------------------+\n");
+                        }
+                        break;
+                    case 0:
+                        break;
+                    default:
+                        printf("Opcao invalida. Tente novamente!\n");
+                        break;
                 }
+                opcao = -1;
                 break;
             case 2:
-                printf("|-> Informe o ID do evento a ser removido: ");
-                scanf("%d", &idRemocao);
-                
-                struct EventoCritico *eventoRemocao = buscarEventoCriticoPorID(raiz, idRemocao);
+                do {
+                    printf("\n+------------------------------------------------------+\n");
+                    printf("|           Busca/Listagem de Eventos Criticos         |\n");
+                    printf("+------------------------------------------------------+\n");
+                    printf("| 1. Buscar Evento Critico por ID                      |\n");
+                    printf("| 2. Listar Eventos Ativos por Intervalo de Seriedade  |\n");
+                    printf("| 3. Listar Eventos por Intervalo de ID                |\n");
+                    printf("| 0. Voltar ao Menu Principal                          |\n");
+                    printf("+------------------------------------------------------+\n");
+                    printf("|-> Escolha uma opcao: ");
+                    scanf("%d", &opcao);
+                } while (opcao < 0 || opcao > 3);
 
-                if (eventoRemocao == NULL) {
-                    printf("+------------------------------------------------------+\n");
-                    printf("|            Evento critico nao encontrado!            |\n");
-                    printf("+------------------------------------------------------+\n");
-                } 
-                else if (eventoRemocao->situacao != RESOLVIDO) {
-                    printf("+------------------------------------------------------+\n");
-                    printf("|  Nao e possivel remover: evento nao esta RESOLVIDO   |\n");
-                    printf("+------------------------------------------------------+\n");
-                } 
-                else {
-                    raiz = removerEventoCritico(raiz, idRemocao);
-                    printf("+------------------------------------------------------+\n");
-                    printf("|             Evento removido com sucesso!             |\n");
-                    printf("+------------------------------------------------------+\n");
+                switch (opcao) {
+                    case 1:
+                        printf("|-> Informe o ID do evento a ser buscado: ");
+                        scanf("%d", &idBusca);
+
+                        struct EventoCritico *evento = buscarEventoCriticoPorID(raiz, idBusca);
+
+                        if (evento != NULL) {
+                            printf("+------------------------------------------------------+\n");
+                            printf("|              Evento critico encontrado!              |\n");
+                            printf("+------------------------------------------------------+\n");
+                            printf("|-> ID do evento: %d\n", evento->id);
+
+                            switch (evento->tipo) {
+                                case ACIDENTE_TRANSITO:
+                                    printf("|-> Tipo do evento: ACIDENTE_TRANSITO\n");
+                                    break;
+                                case FALHA_SEMAFORO:
+                                    printf("|-> Tipo do evento: FALHA_SEMAFORO\n");
+                                    break;
+                                case INTERRUPCAO_ENERGIA:
+                                    printf("|-> Tipo do evento: INTERRUPCAO_ENERGIA\n");
+                                    break;
+                                case ALAGAMENTO:
+                                    printf("|-> Tipo do evento: ALAGAMENTO\n");
+                                    break;
+                                case INCENDIO:
+                                    printf("|-> Tipo do evento: INCENDIO\n");
+                                    break;
+                                default:
+                                    printf("|-> Tipo do evento: DESCONHECIDO\n");
+                            }
+                            printf("|-> Seriedade do evento: %d\n", evento->seriedade);
+                            printf("|-> Data e hora do evento: %02d/%02d/%04d %02d:%02d:%02d\n", evento->dataHora.tm_mday, evento->dataHora.tm_mon + 1, evento->dataHora.tm_year + 1900, evento->dataHora.tm_hour, evento->dataHora.tm_min, evento->dataHora.tm_sec);
+                            printf("|-> Regiao do evento: %s\n", evento->regiao);
+                            if (evento->situacao == ATIVO) {
+                                printf("|-> Situacao do evento: ATIVO\n");
+                            } else {
+                                printf("|-> Situacao do evento: RESOLVIDO\n");
+                            }
+                        } else {
+                            printf("+------------------------------------------------------+\n");
+                            printf("|       Evento critico com ID %d nao encontrado       |\n", idBusca);
+                            printf("+------------------------------------------------------+\n");
+                        }
+                        break;
+                    case 2:
+                        printf("|-> Informe a seriedade minima: ");
+                        scanf("%d", &seriedadeMin);
+                        printf("|-> Informe a seriedade maxima: ");
+                        scanf("%d", &seriedadeMax);
+                        listarEventosAtivosPorSeriedade(raiz, seriedadeMin, seriedadeMax);
+                        printf("+------------------------------------------------------+\n");
+                        break;
+                    case 3:
+                        printf("|-> Informe o ID minimo: ");
+                        scanf("%d", &idMin);
+                        printf("|-> Informe o ID maximo: ");
+                        scanf("%d", &idMax);
+                        listarEventosPorIntervaloDeID(raiz, idMin, idMax);
+                        printf("+------------------------------------------------------+\n");
+                        break;
+                    case 0:
+                        break;
+                    default:
+                        printf("Opcao invalida. Tente novamente!\n");
+                        break;
                 }
-                break;
+                opcao = -1;
+                break;    
             case 3:
-                printf("|-> Informe o ID do evento a ser buscado: ");
-                scanf("%d", &idBusca);
+                do {
+                    printf("\n+------------------------------------------------------+\n");
+                    printf("|           Atualizacao de Eventos Criticos            |\n");
+                    printf("+------------------------------------------------------+\n");
+                    printf("| 1. Alterar Status de um Evento                       |\n");
+                    printf("| 2. Atualizar Seriedade de um Evento Ativo            |\n");
+                    printf("| 0. Voltar ao Menu Principal                          |\n");
+                    printf("+------------------------------------------------------+\n");
+                    printf("|-> Escolha uma opcao: ");
+                    scanf("%d", &opcao);
+                } while (opcao < 0 || opcao > 2);
 
-                struct EventoCritico *evento = buscarEventoCriticoPorID(raiz, idBusca);
-
-                if (evento != NULL) {
-                    printf("+------------------------------------------------------+\n");
-                    printf("|              Evento critico encontrado!              |\n");
-                    printf("+------------------------------------------------------+\n");
-                    printf("|-> ID do evento: %d\n", evento->id);
-
-                    switch (evento->tipo) {
-                        case ACIDENTE_TRANSITO:
-                            printf("|-> Tipo do evento: ACIDENTE_TRANSITO\n");
-                            break;
-                        case FALHA_SEMAFORO:
-                            printf("|-> Tipo do evento: FALHA_SEMAFORO\n");
-                            break;
-                        case INTERRUPCAO_ENERGIA:
-                            printf("|-> Tipo do evento: INTERRUPCAO_ENERGIA\n");
-                            break;
-                        case ALAGAMENTO:
-                            printf("|-> Tipo do evento: ALAGAMENTO\n");
-                            break;
-                        case INCENDIO:
-                            printf("|-> Tipo do evento: INCENDIO\n");
-                            break;
-                        default:
-                            printf("|-> Tipo do evento: DESCONHECIDO\n");
-                    }
-                    printf("|-> Seriedade do evento: %d\n", evento->seriedade);
-                    printf("|-> Data e hora do evento: %02d/%02d/%04d %02d:%02d:%02d\n", evento->dataHora.tm_mday, evento->dataHora.tm_mon + 1, evento->dataHora.tm_year + 1900, evento->dataHora.tm_hour, evento->dataHora.tm_min, evento->dataHora.tm_sec);
-                    printf("|-> Regiao do evento: %s\n", evento->regiao);
-                    if (evento->situacao == ATIVO) {
-                        printf("|-> Situacao do evento: ATIVO\n");
-                    } else {
-                        printf("|-> Situacao do evento: RESOLVIDO\n");
-                    }
-                } else {
-                    printf("+------------------------------------------------------+\n");
-                    printf("|       Evento critico com ID %d nao encontrado       |\n", idBusca);
-                    printf("+------------------------------------------------------+\n");
+                switch (opcao) {
+                    case 1: 
+                        printf("|-> Informe o ID do evento para alterar o status: ");
+                        scanf("%d", &idBusca);
+                        raiz = alterarStatusEvento(raiz, idBusca);
+                        break;
+                    case 2:
+                        printf("|-> Informe o ID do evento para alterar a seriedade: ");
+                        scanf("%d", &idBusca);
+                        raiz = atualizarSeriedadeEventoAtivo(raiz, idBusca);
+                        break;
+                    case 0:
+                        break;
+                    default:
+                        printf("Opcao invalida. Tente novamente!\n");
+                        break;
                 }
-                break;
-            case 4:
-                printf("|-> Informe a seriedade minima: ");
-                scanf("%d", &seriedadeMin);
-                printf("|-> Informe a seriedade maxima: ");
-                scanf("%d", &seriedadeMax);
-                listarEventosAtivosPorSeriedade(raiz, seriedadeMin, seriedadeMax);
-                printf("+------------------------------------------------------+\n");
-                break;
-            case 5:
-                printf("|-> Informe o ID minimo: ");
-                scanf("%d", &idMin);
-                printf("|-> Informe o ID maximo: ");
-                scanf("%d", &idMax);
-                listarEventosPorIntervaloDeID(raiz, idMin, idMax);
-                printf("+------------------------------------------------------+\n");
-                break;
-            case 6:
-                printf("|-> Informe o ID do evento para alterar o status: ");
-                scanf("%d", &idBusca);
-                raiz = alterarStatusEvento(raiz, idBusca);
-                break;
-            case 7:
-                printf("|-> Informe o ID do evento para alterar a seriedade: ");
-                scanf("%d", &idBusca);
-                raiz = atualizarSeriedadeEventoAtivo(raiz, idBusca);
+                opcao = -1;
                 break;
             case 0:
-                printf("Saindo do sistema...\n");
                 break;
             default:
                 printf("Opcao invalida. Tente novamente!\n");
+                break;
         }
     } while (opcao != 0);
 }
