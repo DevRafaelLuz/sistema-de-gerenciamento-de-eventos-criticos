@@ -130,12 +130,8 @@ struct EventoCritico *encontraMenorValor(struct EventoCritico *no) {
 
 // Função para remover um evento crítico
 struct EventoCritico *removerEventoCritico(struct EventoCritico *raiz, int id) {
-    if (raiz == NULL || raiz->situacao == ATIVO) {
-        printf("+------------------------------------------------------+\n");
-        printf("|       Nao e possivel remover o evento critico.       |\n");
-        printf("|     Causa: evento ativo ou ID do evento invalido!    |\n");
-        printf("+------------------------------------------------------+\n");
-        return raiz;
+    if (raiz == NULL) {
+        return NULL;
     }
 
     if (id < raiz->id) {
@@ -143,18 +139,28 @@ struct EventoCritico *removerEventoCritico(struct EventoCritico *raiz, int id) {
     } else if (id > raiz->id) {
         raiz->direita = removerEventoCritico(raiz->direita, id);
     } else {
+        if (raiz->situacao != RESOLVIDO) {
+            return raiz;
+        }
         if (raiz->esquerda == NULL || raiz->direita == NULL) {
             struct EventoCritico *temp = raiz->esquerda ? raiz->esquerda : raiz->direita;
             if (temp == NULL) {
-                temp = raiz;
-                raiz = NULL;
+                free(raiz);
+                return NULL;
             } else {
                 *raiz = *temp;
+                free(temp);
             }
-            free(temp);
         } else { // Caso 2: Nó com dois filhos
             struct EventoCritico *temp = encontraMenorValor(raiz->direita);
+
             raiz->id = temp->id;
+            raiz->tipo = temp->tipo;
+            raiz->seriedade = temp->seriedade;
+            raiz->dataHora = temp->dataHora;
+            strcpy(raiz->regiao, temp->regiao);
+            raiz->situacao = temp->situacao;
+
             raiz->direita = removerEventoCritico(raiz->direita, temp->id);
         }
     }
@@ -465,10 +471,25 @@ void exibirMenu() {
             case 2:
                 printf("|-> Informe o ID do evento a ser removido: ");
                 scanf("%d", &idRemocao);
-                raiz = removerEventoCritico(raiz, idRemocao);
-                printf("+------------------------------------------------------+\n");
-                printf("|              Evento removido com sucesso!            |\n");
-                printf("+------------------------------------------------------+\n");
+                
+                struct EventoCritico *eventoRemocao = buscarEventoCriticoPorID(raiz, idRemocao);
+
+                if (eventoRemocao == NULL) {
+                    printf("+------------------------------------------------------+\n");
+                    printf("|            Evento critico nao encontrado!            |\n");
+                    printf("+------------------------------------------------------+\n");
+                } 
+                else if (eventoRemocao->situacao != RESOLVIDO) {
+                    printf("+------------------------------------------------------+\n");
+                    printf("|  Nao e possivel remover: evento nao esta RESOLVIDO   |\n");
+                    printf("+------------------------------------------------------+\n");
+                } 
+                else {
+                    raiz = removerEventoCritico(raiz, idRemocao);
+                    printf("+------------------------------------------------------+\n");
+                    printf("|             Evento removido com sucesso!             |\n");
+                    printf("+------------------------------------------------------+\n");
+                }
                 break;
             case 3:
                 printf("|-> Informe o ID do evento a ser buscado: ");
