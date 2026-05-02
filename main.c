@@ -386,7 +386,10 @@ void exibirMenu() {
         printf("| 0. Sair                                              |\n");
         printf("+------------------------------------------------------+\n");
         printf("|-> Escolha uma opcao: ");
-        scanf("%d", &opcao);
+        if (scanf("%d", &opcao) != 1) {
+            opcao = -1;
+        }
+        while (getchar() != '\n');
         
         switch (opcao) {
             case 1:
@@ -399,7 +402,10 @@ void exibirMenu() {
                     printf("| 0. Voltar ao Menu Principal                          |\n");
                     printf("+------------------------------------------------------+\n");
                     printf("|-> Escolha uma opcao: ");
-                    scanf("%d", &opcao);
+                    if (scanf("%d", &opcao) != 1) {
+                        opcao = -1;
+                    }
+                    while (getchar() != '\n');
                 } while (opcao < 0 || opcao > 2);
 
                 switch (opcao) {
@@ -407,7 +413,10 @@ void exibirMenu() {
                         idNovoEvento = geraId();
                         do {
                             printf("|-> Informe o tipo do evento: \n(1. ACIDENTE_TRANSITO, 2. FALHA_SEMAFORO, 3. INTERRUPCAO_ENERGIA, 4. ALAGAMENTO, 5. INCENDIO): ");
-                            scanf("%d", &tipoEvento);                    
+                            if (scanf("%d", &tipoEvento) != 1) {
+                                opcao = -1;
+                            }
+                            while (getchar() != '\n');                    
 
                             switch (tipoEvento) {
                                 case 1:
@@ -427,12 +436,16 @@ void exibirMenu() {
                                     break;
                                 default:
                                     printf("Tipo de evento invalido!\n");
+                                    break;
                             }
                         } while (tipoEvento < 1 || tipoEvento > 5);
 
                         do {
                             printf("|-> Informe a seriedade do evento (1-5): ");
-                            scanf("%d", &seriedade);
+                            if (scanf("%d", &seriedade) != 1) {
+                                opcao = -1;
+                            }
+                            while (getchar() != '\n');
                         } while (seriedade < 1 || seriedade > 5); 
 
                         printf("|-> Informe a regiao do evento: ");
@@ -456,7 +469,7 @@ void exibirMenu() {
                             switch (novoEvento->tipo) {
                                 case ACIDENTE_TRANSITO:
                                     printf("|-> Tipo do evento: ACIDENTE_TRANSITO\n");
-                                break;
+                                    break;
                                 case FALHA_SEMAFORO:
                                     printf("|-> Tipo do evento: FALHA_SEMAFORO\n");
                                     break;
@@ -471,7 +484,8 @@ void exibirMenu() {
                                     break;
                                 default:
                                     printf("|-> Tipo do evento: DESCONHECIDO\n");
-                                }                        
+                                    break;
+                            }                        
                             printf("|-> Seriedade do evento: %d\n", novoEvento->seriedade);
                             printf("|-> Data e hora do evento: %02d/%02d/%04d %02d:%02d:%02d\n", novoEvento->dataHora.tm_mday, novoEvento->dataHora.tm_mon + 1, novoEvento->dataHora.tm_year + 1900, novoEvento->dataHora.tm_hour, novoEvento->dataHora.tm_min, novoEvento->dataHora.tm_sec);
                             printf("|-> Regiao do evento: %s\n", novoEvento->regiao);
@@ -520,7 +534,10 @@ void exibirMenu() {
                     printf("| 0. Voltar ao Menu Principal                          |\n");
                     printf("+------------------------------------------------------+\n");
                     printf("|-> Escolha uma opcao: ");
-                    scanf("%d", &opcao);
+                    if (scanf("%d", &opcao) != 1) {
+                        opcao = -1;
+                    }
+                    while (getchar() != '\n');
                 } while (opcao < 0 || opcao > 3);
 
                 switch (opcao) {
@@ -554,6 +571,7 @@ void exibirMenu() {
                                     break;
                                 default:
                                     printf("|-> Tipo do evento: DESCONHECIDO\n");
+                                    break;
                             }
                             printf("|-> Seriedade do evento: %d\n", evento->seriedade);
                             printf("|-> Data e hora do evento: %02d/%02d/%04d %02d:%02d:%02d\n", evento->dataHora.tm_mday, evento->dataHora.tm_mon + 1, evento->dataHora.tm_year + 1900, evento->dataHora.tm_hour, evento->dataHora.tm_min, evento->dataHora.tm_sec);
@@ -603,18 +621,27 @@ void exibirMenu() {
                     printf("| 0. Voltar ao Menu Principal                          |\n");
                     printf("+------------------------------------------------------+\n");
                     printf("|-> Escolha uma opcao: ");
-                    scanf("%d", &opcao);
+                    if (scanf("%d", &opcao) != 1) {
+                        opcao = -1;
+                    }
+                    while (getchar() != '\n');
                 } while (opcao < 0 || opcao > 2);
 
                 switch (opcao) {
                     case 1: 
                         printf("|-> Informe o ID do evento para alterar o status: ");
-                        scanf("%d", &idBusca);
+                        if (scanf("%d", &idBusca) != 1) {
+                            opcao = -1;
+                        }
+                        while (getchar() != '\n');
                         raiz = alterarStatusEvento(raiz, idBusca);
                         break;
                     case 2:
                         printf("|-> Informe o ID do evento para alterar a seriedade: ");
-                        scanf("%d", &idBusca);
+                        if (scanf("%d", &idBusca) != 1) {
+                            opcao = -1;
+                        }
+                        while (getchar() != '\n');
                         raiz = atualizarSeriedadeEventoAtivo(raiz, idBusca);
                         break;
                     case 0:
@@ -628,7 +655,6 @@ void exibirMenu() {
             case 0:
                 break;
             default:
-                printf("Opcao invalida. Tente novamente!\n");
                 break;
         }
     } while (opcao != 0);
